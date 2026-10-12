@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROJECT SURVIVOR</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #080d11;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  h1 { color: #72ffad; }
+
+  canvas {
+    width: min(800px, 96vw);
+    height: auto;
+    border: 3px solid #72ffad;
+    background: #172126;
+    display: block;
+    margin: 15px auto;
+  }
+
+  p { color: #c4d3d8; }
+
+  button {
+    padding: 12px 20px;
+    background: #72ffad;
+    border: 0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>PROJECT: SURVIVOR</h1>
+<p>Use W A S D ou as SETAS para andar.</p>
+
+<canvas id="game" width="800" height="500"
+tabindex="0"></canvas>
+
+<p id="status">Clique no jogo e comece a explorar!</p>
+<button id="reset">REINICIAR</button>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const statusText = document.getElementById("status");
+
+const player = {
+  x: 60,
+  y: 60,
+  size: 24,
+  speed: 4
+};
+
+const keys = new Set();
+
+const walls = [
+  {x: 180, y: 0, w: 20, h: 300},
+  {x: 180, y: 360, w: 20, h: 140},
+  {x: 350, y: 100, w: 20, h: 300},
+  {x: 520, y: 0, w: 20, h: 280},
+  {x: 520, y: 340, w: 20, h: 160}
+];
+
+const items = [
+  {x: 270, y: 60, found: false},
+  {x: 280, y: 430, found: false},
+  {x: 650, y: 300, found: false}
+];
+
+let won = false;
+
+function reset() {
+  player.x = 60;
+  player.y = 60;
+  won = false;
+
+  for (const item of items) {
+    item.found = false;
+  }
+
+  statusText.textContent = "Encontre as 3 baterias!";
+  canvas.focus();
+}
+
+function collides(x, y) {
+  if (x < 0 || y < 0 ||
+      x + player.size > canvas.width ||
+      y + player.size > canvas.height) {
+    return true;
+  }
+
+  return walls.some(w =>
+    x < w.x + w.w &&
+    x + player.size > w.x &&
+    y < w.y + w.h &&
+    y + player.size > w.y
+  );
+}
+
+function update() {
+  if (won) return;
+
+  let dx = 0;
+  let dy = 0;
+
+  if (keys.has("w") || keys.has("arrowup")) dy--;
+  if (keys.has("s") || keys.has("arrowdown")) dy++;
+  if (keys.has("a") || keys.has("arrowleft")) dx--;
+  if (keys.has("d") || keys.has("arrowright")) dx++;
+
+  if (dx !== 0 && dy !== 0) {
+    dx *= Math.SQRT1_2;
+    dy *= Math.SQRT1_2;
+  }
+
+  const nextX = player.x + dx * player.speed;
+  const nextY = player.y + dy * player.speed;
+
+  // Testa cada eixo separadamente para deslizar nas paredes.
+  if (!collides(nextX, player.y)) {
+    player.x = nextX;
+  }
+
+  if (!collides(player.x, nextY)) {
+    player.y = nextY;
+  }
+
+  for (const item of items) {
+    if (item.found) continue;
+
+    const close =
+      player.x < item.x + 20 &&
+      player.x + player.size > item.x &&
+      player.y < item.y + 20 &&
+      player.y + player.size > item.y;
+
+    if (close) item.found = true;
+  }
+
+  const count = items.filter(i => i.found).length;
+
+  if (count === 3 &&
+      player.x + player.size > 740 &&
+      player.y + player.size > 440) {
+    won = true;
+    statusText.textContent = "VOCÊ ESCAPOU! Parabéns!";
+  } else {
+    statusText.textContent =
+      "Baterias: " + count + "/3 — Chegue à saída verde.";
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 800, 500);
+
+  // Piso quadriculado.
+  ctx.fillStyle = "#172126";
+  ctx.fillRect(0, 0, 800, 500);
+
+  ctx.strokeStyle = "#26363b";
+
+  for (let x = 0; x < 800; x += 40) {
+    for (let y = 0; y < 500; y += 40) {
+      ctx.strokeRect(x, y, 40, 40);
+    }
+  }
+
+  // Paredes.
+  for (const wall of walls) {
+    ctx.fillStyle = "#60777c";
+    ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+  }
+
+  // Baterias.
+  for (const item of items) {
+    if (item.found) continue;
+
+    ctx.fillStyle = "#ffdf70";
+    ctx.fillRect(item.x, item.y, 20, 20);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(item.x + 6, item.y + 4, 8, 3);
+  }
+
+  // Saída.
+  ctx.fillStyle = items.every(i => i.found)
+    ? "#72ffad" : "#8a4545";
+  ctx.fillRect(740, 440, 60, 60);
+
+  // Personagem.
+  ctx.fillStyle = "#72ffad";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+
+  ctx.fillStyle = "#153a28";
+  ctx.fillRect(player.x + 5, player.y + 6, 5, 5);
+  ctx.fillRect(player.x + 14, player.y + 6, 5, 5);
+
+  if (won) {
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillRect(0, 0, 800, 500);
+
+    ctx.fillStyle = "#72ffad";
+    ctx.font = "bold 38px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("MISSÃO CONCLUÍDA!", 400, 250);
+    ctx.textAlign = "left";
+  }
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// Impede as setas de rolar a página enquanto o jogo estiver ativo.
+document.addEventListener("keydown", event => {
+  const key = event.key.toLowerCase();
+
+  if ([
+    "w", "a", "s", "d",
+    "arrowup", "arrowdown",
+    "arrowleft", "arrowright"
+  ].includes(key)) {
+    event.preventDefault();
+    keys.add(key);
+  }
+});
+
+document.addEventListener("keyup", event => {
+  keys.delete(event.key.toLowerCase());
+});
+
+// Evita que uma tecla fique presa se a janela perder o foco.
+window.addEventListener("blur", () => keys.clear());
+
+canvas.addEventListener("pointerdown", () => canvas.focus());
+
+document.getElementById("reset").addEventListener("click", reset);
+
+reset();
+loop();
+</script>
+
+</body>
+</html>
