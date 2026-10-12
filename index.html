@@ -3,108 +3,356 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PROJECT SURVIVOR</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1,
+               user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080d11">
+<title>PROJECT: SURVIVOR</title>
 
 <style>
-  body {
-    margin: 0;
-    background: #080d11;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
+:root {
+  --green: #72ffad;
+  --bg: #080d11;
+  --panel: #121c22;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: #eef5f5;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  overscroll-behavior: none;
+}
+
+main {
+  width: min(900px, 100%);
+  margin: auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  color: var(--green);
+  font-size: clamp(20px, 4vw, 32px);
+  letter-spacing: 3px;
+  margin: 4px 0;
+}
+
+.subtitle {
+  margin: 4px 0 12px;
+  color: #8ca1a7;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid #293a40;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.hud strong { color: var(--green); }
+
+#status {
+  color: var(--green);
+  font-weight: bold;
+}
+
+.game-frame {
+  position: relative;
+  width: 100%;
+  border: 2px solid #34494d;
+  background: #111b1f;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  outline: none;
+  touch-action: none;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  font: inherit;
+  border: 1px solid #355048;
+  border-radius: 8px;
+  color: white;
+  background: #17262a;
+  padding: 11px 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:active {
+  background: #28443a;
+}
+
+.primary {
+  background: var(--green);
+  color: #07120b;
+  border: none;
+  font-weight: bold;
+}
+
+.instructions {
+  font-size: 12px;
+  color: #93a8ad;
+  line-height: 1.6;
+}
+
+/* Controles direcionais mobile */
+.mobile-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 4px 4px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 54px);
+  grid-template-rows: repeat(2, 48px);
+  gap: 5px;
+}
+
+.direction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 25px;
+  font-weight: bold;
+  background: #16262b;
+  border: 1px solid #3b5a53;
+  box-shadow: inset 0 0 12px #20352d;
+  touch-action: none;
+}
+
+.direction.active,
+.direction:active {
+  color: #07120b;
+  background: var(--green);
+}
+
+.up    { grid-column: 2; grid-row: 1; }
+.left  { grid-column: 1; grid-row: 2; }
+.down  { grid-column: 2; grid-row: 2; }
+.right { grid-column: 3; grid-row: 2; }
+
+.mobile-help {
+  flex: 1;
+  text-align: center;
+  color: #93a8ad;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (pointer: fine) and (min-width: 700px) {
+  .mobile-controls { display: none; }
+}
+
+@media (max-width: 480px) {
+  body { padding: 8px; }
+
+  .hud { padding: 9px; font-size: 11px; }
+
+  .dpad {
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(2, 44px);
+    gap: 4px;
   }
 
-  h1 { color: #72ffad; }
+  .mobile-controls { gap: 8px; padding-top: 10px; }
 
-  canvas {
-    width: min(800px, 96vw);
-    height: auto;
-    border: 3px solid #72ffad;
-    background: #172126;
-    display: block;
-    margin: 15px auto;
+  .direction { font-size: 22px; }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  body { padding: 5px 12px; }
+
+  main { width: min(950px, 100%); }
+
+  h1 { font-size: 19px; }
+
+  .subtitle { margin-bottom: 5px; }
+
+  .hud { padding: 6px 10px; margin-bottom: 5px; }
+
+  .mobile-controls { padding-top: 5px; }
+
+  .dpad {
+    grid-template-columns: repeat(3, 42px);
+    grid-template-rows: repeat(2, 34px);
   }
 
-  p { color: #c4d3d8; }
+  .direction { font-size: 19px; }
 
-  button {
-    padding: 12px 20px;
-    background: #72ffad;
-    border: 0;
-    font-weight: bold;
-    cursor: pointer;
-  }
+  .footer { margin-top: 5px; }
+}
 </style>
 </head>
 
 <body>
+<main>
+  <header>
+    <div>
+      <h1>PROJECT: SURVIVOR</h1>
+      <p class="subtitle">CAPÍTULO 01 — INSTALAÇÃO ABANDONADA</p>
+    </div>
+    <button id="restart" class="primary">REINICIAR ↻</button>
+  </header>
 
-<h1>PROJECT: SURVIVOR</h1>
-<p>Use W A S D ou as SETAS para andar.</p>
+  <section class="hud">
+    <span>VIDA: <strong>100%</strong></span>
+    <span>BATERIAS: <strong id="count">0/3</strong></span>
+    <span id="status">ENCONTRE AS BATERIAS</span>
+  </section>
 
-<canvas id="game" width="800" height="500"
-tabindex="0"></canvas>
+  <div class="game-frame">
+    <canvas id="game" width="800" height="500"
+            tabindex="0" aria-label="Área do jogo"></canvas>
+  </div>
 
-<p id="status">Clique no jogo e comece a explorar!</p>
-<button id="reset">REINICIAR</button>
+  <section class="mobile-controls" aria-label="Controles do jogo">
+    <div class="dpad">
+      <button class="direction up" data-key="arrowup"
+              aria-label="Mover para cima">▲</button>
+      <button class="direction left" data-key="arrowleft"
+              aria-label="Mover para esquerda">◀</button>
+      <button class="direction down" data-key="arrowdown"
+              aria-label="Mover para baixo">▼</button>
+      <button class="direction right" data-key="arrowright"
+              aria-label="Mover para direita">▶</button>
+    </div>
+
+    <div class="mobile-help">
+      <strong>MOVIMENTAÇÃO</strong><br>
+      Toque e segure as setas.<br>
+      Encontre as 3 baterias e escape!
+    </div>
+  </section>
+
+  <div class="footer">
+    <div class="instructions">
+      PC: WASD ou setas<br>
+      Celular: botões direcionais
+    </div>
+    <button id="fullscreen">TELA CHEIA ⛶</button>
+  </div>
+</main>
 
 <script>
+"use strict";
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-const statusText = document.getElementById("status");
+const countUI = document.getElementById("count");
+const statusUI = document.getElementById("status");
 
 const player = {
-  x: 60,
-  y: 60,
-  size: 24,
-  speed: 4
+  x: 55,
+  y: 55,
+  size: 22,
+  speed: 3
 };
 
 const keys = new Set();
 
 const walls = [
-  {x: 180, y: 0, w: 20, h: 300},
-  {x: 180, y: 360, w: 20, h: 140},
-  {x: 350, y: 100, w: 20, h: 300},
-  {x: 520, y: 0, w: 20, h: 280},
-  {x: 520, y: 340, w: 20, h: 160}
+  {x: 150, y: 0,   w: 22, h: 285},
+  {x: 150, y: 350, w: 22, h: 150},
+
+  {x: 290, y: 100, w: 22, h: 300},
+
+  {x: 430, y: 0,   w: 22, h: 180},
+  {x: 430, y: 240, w: 22, h: 260},
+
+  {x: 570, y: 100, w: 22, h: 300},
+
+  {x: 172, y: 100, w: 118, h: 18},
+  {x: 312, y: 380, w: 118, h: 18},
+  {x: 452, y: 100, w: 118, h: 18}
 ];
 
-const items = [
-  {x: 270, y: 60, found: false},
-  {x: 280, y: 430, found: false},
-  {x: 650, y: 300, found: false}
-];
-
+let batteries = [];
 let won = false;
 
-function reset() {
-  player.x = 60;
-  player.y = 60;
+function resetGame() {
+  player.x = 55;
+  player.y = 55;
   won = false;
 
-  for (const item of items) {
-    item.found = false;
-  }
+  batteries = [
+    {x: 225, y: 55, found: false},
+    {x: 355, y: 435, found: false},
+    {x: 645, y: 290, found: false}
+  ];
 
-  statusText.textContent = "Encontre as 3 baterias!";
-  canvas.focus();
+  keys.clear();
+  document.querySelectorAll(".direction")
+    .forEach(button => button.classList.remove("active"));
+
+  countUI.textContent = "0/3";
+  statusUI.textContent = "ENCONTRE AS BATERIAS";
 }
 
-function collides(x, y) {
+function overlaps(x, y, size, wall) {
+  return x < wall.x + wall.w &&
+         x + size > wall.x &&
+         y < wall.y + wall.h &&
+         y + size > wall.y;
+}
+
+function blocked(x, y) {
   if (x < 0 || y < 0 ||
       x + player.size > canvas.width ||
       y + player.size > canvas.height) {
     return true;
   }
 
-  return walls.some(w =>
-    x < w.x + w.w &&
-    x + player.size > w.x &&
-    y < w.y + w.h &&
-    y + player.size > w.y
-  );
+  return walls.some(w => overlaps(x, y, player.size, w));
 }
 
 function update() {
@@ -113,11 +361,12 @@ function update() {
   let dx = 0;
   let dy = 0;
 
-  if (keys.has("w") || keys.has("arrowup")) dy--;
-  if (keys.has("s") || keys.has("arrowdown")) dy++;
-  if (keys.has("a") || keys.has("arrowleft")) dx--;
-  if (keys.has("d") || keys.has("arrowright")) dx++;
+  if (keys.has("arrowleft") || keys.has("a")) dx--;
+  if (keys.has("arrowright") || keys.has("d")) dx++;
+  if (keys.has("arrowup") || keys.has("w")) dy--;
+  if (keys.has("arrowdown") || keys.has("s")) dy++;
 
+  // Velocidade uniforme na diagonal.
   if (dx !== 0 && dy !== 0) {
     dx *= Math.SQRT1_2;
     dy *= Math.SQRT1_2;
@@ -126,48 +375,51 @@ function update() {
   const nextX = player.x + dx * player.speed;
   const nextY = player.y + dy * player.speed;
 
-  // Testa cada eixo separadamente para deslizar nas paredes.
-  if (!collides(nextX, player.y)) {
-    player.x = nextX;
+  // Permite deslizar ao longo das paredes.
+  if (!blocked(nextX, player.y)) player.x = nextX;
+  if (!blocked(player.x, nextY)) player.y = nextY;
+
+  for (const b of batteries) {
+    if (b.found) continue;
+
+    if (
+      player.x < b.x + 20 &&
+      player.x + player.size > b.x &&
+      player.y < b.y + 22 &&
+      player.y + player.size > b.y
+    ) {
+      b.found = true;
+    }
   }
 
-  if (!collides(player.x, nextY)) {
-    player.y = nextY;
-  }
+  const total = batteries.filter(b => b.found).length;
+  countUI.textContent = total + "/3";
 
-  for (const item of items) {
-    if (item.found) continue;
+  const atExit =
+    player.x + player.size > 740 &&
+    player.y + player.size > 440;
 
-    const close =
-      player.x < item.x + 20 &&
-      player.x + player.size > item.x &&
-      player.y < item.y + 20 &&
-      player.y + player.size > item.y;
-
-    if (close) item.found = true;
-  }
-
-  const count = items.filter(i => i.found).length;
-
-  if (count === 3 &&
-      player.x + player.size > 740 &&
-      player.y + player.size > 440) {
+  if (atExit && total === 3) {
     won = true;
-    statusText.textContent = "VOCÊ ESCAPOU! Parabéns!";
+    statusUI.textContent = "MISSÃO CONCLUÍDA!";
+  } else if (atExit) {
+    statusUI.textContent = "FALTAM BATERIAS!";
+  } else if (total === 3) {
+    statusUI.textContent = "VÁ ATÉ A SAÍDA VERDE";
   } else {
-    statusText.textContent =
-      "Baterias: " + count + "/3 — Chegue à saída verde.";
+    statusUI.textContent = "EXPLORE O LABORATÓRIO";
   }
 }
 
 function draw() {
   ctx.clearRect(0, 0, 800, 500);
 
-  // Piso quadriculado.
-  ctx.fillStyle = "#172126";
+  // Piso.
+  ctx.fillStyle = "#111c20";
   ctx.fillRect(0, 0, 800, 500);
 
-  ctx.strokeStyle = "#26363b";
+  ctx.strokeStyle = "#1c2b30";
+  ctx.lineWidth = 1;
 
   for (let x = 0; x < 800; x += 40) {
     for (let y = 0; y < 500; y += 40) {
@@ -175,43 +427,66 @@ function draw() {
     }
   }
 
-  // Paredes.
-  for (const wall of walls) {
-    ctx.fillStyle = "#60777c";
-    ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+  // Paredes e bordas.
+  for (const w of walls) {
+    ctx.fillStyle = "#40565b";
+    ctx.fillRect(w.x, w.y, w.w, w.h);
+
+    ctx.strokeStyle = "#71878b";
+    ctx.strokeRect(w.x, w.y, w.w, w.h);
   }
 
   // Baterias.
-  for (const item of items) {
-    if (item.found) continue;
+  for (const b of batteries) {
+    if (b.found) continue;
 
-    ctx.fillStyle = "#ffdf70";
-    ctx.fillRect(item.x, item.y, 20, 20);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(item.x + 6, item.y + 4, 8, 3);
+    ctx.fillStyle = "#ffdc70";
+    ctx.fillRect(b.x, b.y, 18, 22);
+
+    ctx.fillStyle = "#fff5c9";
+    ctx.fillRect(b.x + 5, b.y + 4, 8, 4);
+
+    ctx.fillStyle = "#9c7924";
+    ctx.fillRect(b.x + 7, b.y + 10, 4, 8);
   }
 
   // Saída.
-  ctx.fillStyle = items.every(i => i.found)
-    ? "#72ffad" : "#8a4545";
+  const total = batteries.filter(b => b.found).length;
+
+  ctx.fillStyle = total === 3 ? "#72ffad" : "#813d43";
   ctx.fillRect(740, 440, 60, 60);
 
+  ctx.fillStyle = "#07120b";
+  ctx.font = "bold 11px Arial";
+  ctx.fillText("SAÍDA", 748, 474);
+
   // Personagem.
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(player.x + 3, player.y + 4, player.size, player.size);
+
   ctx.fillStyle = "#72ffad";
   ctx.fillRect(player.x, player.y, player.size, player.size);
 
-  ctx.fillStyle = "#153a28";
-  ctx.fillRect(player.x + 5, player.y + 6, 5, 5);
-  ctx.fillRect(player.x + 14, player.y + 6, 5, 5);
+  ctx.fillStyle = "#173c2a";
+  ctx.fillRect(player.x + 4, player.y + 5, 5, 5);
+  ctx.fillRect(player.x + 13, player.y + 5, 5, 5);
 
+  // Tela de vitória.
   if (won) {
-    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.82)";
     ctx.fillRect(0, 0, 800, 500);
 
-    ctx.fillStyle = "#72ffad";
-    ctx.font = "bold 38px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("MISSÃO CONCLUÍDA!", 400, 250);
+    ctx.fillStyle = "#72ffad";
+    ctx.font = "bold 34px Arial";
+    ctx.fillText("VOCÊ ESCAPOU!", 400, 230);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "18px Arial";
+    ctx.fillText("Missão concluída", 400, 270);
+
+    ctx.font = "14px Arial";
+    ctx.fillText("Toque em REINICIAR para jogar novamente", 400, 305);
     ctx.textAlign = "left";
   }
 }
@@ -222,34 +497,82 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Impede as setas de rolar a página enquanto o jogo estiver ativo.
+// Teclado no computador.
 document.addEventListener("keydown", event => {
   const key = event.key.toLowerCase();
 
-  if ([
-    "w", "a", "s", "d",
-    "arrowup", "arrowdown",
-    "arrowleft", "arrowright"
-  ].includes(key)) {
+  const allowed = [
+    "arrowup", "arrowdown", "arrowleft", "arrowright",
+    "w", "a", "s", "d"
+  ];
+
+  if (allowed.includes(key)) {
     event.preventDefault();
     keys.add(key);
   }
+
+  if (key === "r") resetGame();
 });
 
 document.addEventListener("keyup", event => {
   keys.delete(event.key.toLowerCase());
 });
 
-// Evita que uma tecla fique presa se a janela perder o foco.
-window.addEventListener("blur", () => keys.clear());
+// Controles direcionais para telas sensíveis ao toque.
+document.querySelectorAll(".direction").forEach(button => {
+  const key = button.dataset.key;
 
-canvas.addEventListener("pointerdown", () => canvas.focus());
+  button.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    keys.add(key);
+    button.classList.add("active");
 
-document.getElementById("reset").addEventListener("click", reset);
+    if (button.setPointerCapture) {
+      button.setPointerCapture(event.pointerId);
+    }
+  });
 
-reset();
+  function release(event) {
+    keys.delete(key);
+    button.classList.remove("active");
+  }
+
+  button.addEventListener("pointerup", release);
+  button.addEventListener("pointercancel", release);
+  button.addEventListener("lostpointercapture", release);
+});
+
+// Não deixe o personagem andando sozinho se o jogador
+// trocar de aplicativo ou perder o foco da janela.
+window.addEventListener("blur", () => {
+  keys.clear();
+  document.querySelectorAll(".direction")
+    .forEach(button => button.classList.remove("active"));
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) keys.clear();
+});
+
+document.getElementById("restart")
+  .addEventListener("click", resetGame);
+
+document.getElementById("fullscreen")
+  .addEventListener("click", async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      statusUI.textContent =
+        "Tela cheia indisponível neste navegador.";
+    }
+  });
+
+resetGame();
 loop();
 </script>
-
 </body>
 </html>
